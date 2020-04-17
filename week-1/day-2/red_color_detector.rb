@@ -15,22 +15,33 @@
 # b. The G and B values must each be less
 # than the R value divided by 4. 6.5
 
-def rgb_detector(sample)
-  result = 0
-  new_array = sample.flatten(1)
-  new_array.each do |sub_array|
-    red = sub_array[0]
-    green = sub_array[1]
-    blue = sub_array[2]
-    result += 1 if red > 100 && green < (red / 4) && blue < (red / 4)
-  end
-  result
+def red?(array)
+  red = array[0]
+  green = array[1]
+  blue = array[2]
+  red > 100 && green < (red / 4) && blue < (red / 4)
 end
 
-sample = [[[65, 67, 23], [234, 176, 0], [143, 0, 0]],
-          [[255, 30, 51], [156, 41, 38], [3, 243, 176]],
-          [[255, 255, 255], [0, 0, 0], [133, 28, 13]],
-          [[26, 43, 255], [48, 2, 2], [57, 89, 202]]]
+def rgb_detector(sample)
+  new_array = sample.flatten(1)
+  new_array.inject(0) do |acc, sub_array|
+    red?(sub_array) ? acc += 1 : acc
+  end
+end
+
+sample = [
+  [
+    [65, 67, 23], [234, 176, 0], [143, 0, 0]
+  ],
+  [
+    [255, 30, 51], [156, 41, 38], [3, 243, 176]
+  ],
+  [
+    [255, 255, 255], [0, 0, 0], [133, 28, 13]
+  ],
+  [
+    [26, 43, 255], [48, 2, 2], [57, 89, 202]
+  ]
+]
 
 puts rgb_detector(sample)
-# 3
