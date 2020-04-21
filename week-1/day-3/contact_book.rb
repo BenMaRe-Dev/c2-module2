@@ -49,7 +49,7 @@ case command
     if contacts[new_name.to_sym].nil?
       puts "Please enter a phone number: "
       new_phone = gets.chomp
-      contacts[new_name] = new_phone
+      contacts[new_name.to_sym] = new_phone
       puts "Added!"
       puts " "
       puts "#{new_name} -> #{new_phone}"
