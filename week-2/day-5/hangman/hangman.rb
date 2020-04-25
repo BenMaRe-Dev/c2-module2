@@ -1,57 +1,68 @@
-class Game
+class Hangman
+  LETTERS = ("a".."z") && ("A".."Z").to_a
+
+  attr_accessor :user_attemps
+
   def initialize
-    @letters = ("a".."z").to_a
-    @word = words.select { |w| w.length <= 12}.sample
-    @attemps = @word.length
+    @word = get_word
+    @total_attemps = @word.length
+    @available_attemps = @word.length
+    @guessed_letters = []
   end
 
-  def words
-    words = File.read("5desk.txt")
-    words.split(" ")
+  def get_word(word_length=12)
+    File.read("5desk.txt")
+        .split(" ")
+        .select { |w| w.length <= word_length}.sample
   end
 
-  def display_long
-    display_long = ""
-    @word.size.times do
-      display_long += "_ "
-    end
-    puts display_long
+  def update_guessed_letters
+    @guessed_letters.push(@current_choice)
+  end
+  
+  def show_progress
+    word_revealed = @word.split("").map {|l| @guessed_letters.include?(l) ? l : "_"}
+    "[ #{ word_revealed.reduce('') { |acc, l| acc + "#{l} " } }]\n"
   end
 
-  def guesses
-    puts "Please enter a letter:"
-    guess = gets.chomp
-
-
-    right_guess = @word.include? guess
-    if right_guess
-    puts "bien" #<- placeholder // cuando se lleve a impresión la letra acertada, debe dejar de ser recibida por el programa. 
-    guesses
-    else
-      puts "What a shame! That letter wasn't found" 
-      @attemps -= 1
-      puts "Now you just have #{@attemps} attemps"
-      guesses
-    end
+  def valid_guess?
+    @word.include? @current_choice 
   end
-
+  
   def start
-    puts "Welcome to Hangman"
-    puts "Let's have some fun!"
-    puts "-------------------"
-
-    puts "Your word is #{@word.size} characters long"
-    display_long
-    puts " "
+    wellcome
     attemps
-    guesses
+    guess
+  end
+
+  def guess
+    puts "Please enter a letter:"
+    @current_choice = gets.chomp
+    if valid_guess? 
+      update_guessed_letters
+      puts "Good choice!" 
+    else
+      puts "What a shame! That letter wasn't found"
+      @available_attemps -= 1
+      puts "Now you just have #{@available_attemps} attemps"
+    end
+    print show_progress
+    guess
+  end
+
+  def wellcome
+    puts "Welcome to Hangman"
+    puts "------------------"
+    puts "Let's have some fun!"
+    puts "Your word is #{@word.size} characters long"
+    print show_progress
   end
 
   def attemps
-    puts "You have #{@attemps} attemps to find out the right word"
+    puts "You have #{@total_attemps} attemps to find out the right word"
     puts "Good luck!"
   end
 end
 
-game = Game.new
+game = Hangman.new
 game.start
