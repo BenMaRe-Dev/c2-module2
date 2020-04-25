@@ -21,8 +21,8 @@ class Hangman
   end
   
   def show_progress
-    word_revealed = @word.split("").map {|l| @guessed_letters.include?(l) ? l : "_"}
-    "[ #{ word_revealed.reduce('') { |acc, l| acc + "#{l} " } }]\n"
+    @word_revealed = @word.split("").map {|l| @guessed_letters.include?(l) ? l : "_"}
+    "[ #{ @word_revealed.reduce('') { |acc, l| acc + "#{l} " } }]\n"
   end
 
   def valid_guess?
@@ -36,25 +36,31 @@ class Hangman
   end
 
   def guess
-    if can_continue?
-      puts "Please enter a letter:"
-      @current_choice = gets.chomp
-      if valid_guess? 
-        update_guessed_letters
-        puts "Good choice!" 
-      else
-        update_available_attemps
-        puts "Now you just have #{@available_attemps} attemps"
-      end
-      print show_progress
-      guess
+    puts "Please enter a letter:"
+    @current_choice = gets.chomp
+    if valid_guess? 
+      update_guessed_letters
+      puts "Good choice!"
+      puts "You won" if win?
     else
-      puts "Game Over"
+      update_available_attemps
+      puts "Now you just have #{@available_attemps} attemps"
+      puts "Game over" if game_over?
     end
+    print show_progress
+    guess if continue?
   end
 
-  def can_continue?
-    @available_attemps.positive?
+  def continue?
+    !game_over? && !win?
+  end
+
+  def win?
+    @word_revealed.include?("_") == false
+  end
+
+  def game_over?
+    @available_attemps.zero?
   end
 
   def update_available_attemps
