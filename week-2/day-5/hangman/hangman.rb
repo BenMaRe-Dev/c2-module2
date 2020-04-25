@@ -36,18 +36,29 @@ class Hangman
   end
 
   def guess
-    puts "Please enter a letter:"
-    @current_choice = gets.chomp
-    if valid_guess? 
-      update_guessed_letters
-      puts "Good choice!" 
+    if can_continue?
+      puts "Please enter a letter:"
+      @current_choice = gets.chomp
+      if valid_guess? 
+        update_guessed_letters
+        puts "Good choice!" 
+      else
+        update_available_attemps
+        puts "Now you just have #{@available_attemps} attemps"
+      end
+      print show_progress
+      guess
     else
-      puts "What a shame! That letter wasn't found"
-      @available_attemps -= 1
-      puts "Now you just have #{@available_attemps} attemps"
+      puts "Game Over"
     end
-    print show_progress
-    guess
+  end
+
+  def can_continue?
+    @available_attemps.positive?
+  end
+
+  def update_available_attemps
+    @available_attemps -= 1
   end
 
   def wellcome
