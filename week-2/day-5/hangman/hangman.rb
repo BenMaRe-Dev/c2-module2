@@ -1,5 +1,5 @@
 class Hangman
-  LETTERS = ("a".."z") && ("A".."Z").to_a
+  LETTERS = ("a".."z").to_a
 
   attr_accessor :user_attemps
 
@@ -8,12 +8,25 @@ class Hangman
     @total_attemps = @word.length
     @available_attemps = @word.length
     @guessed_letters = []
+    @word_revealed = []
+  end
+
+  def start
+    wellcome_info
+    attemps_info
+    ask
   end
 
   def get_word(word_length=12)
     File.read("5desk.txt")
         .split(" ")
-        .select { |w| w.length <= word_length}.sample
+        .select { |w| w.length <= word_length}
+        .sample
+        .downcase
+  end
+  
+  def reveal_letter
+    @word_revealed = @word.split("").map {|l| @guessed_letters.include?(l) ? l : "_"}
   end
 
   def update_guessed_letters
@@ -21,25 +34,30 @@ class Hangman
   end
   
   def show_progress
-    @word_revealed = @word.split("").map {|l| @guessed_letters.include?(l) ? l : "_"}
     "[ #{ @word_revealed.reduce('') { |acc, l| acc + "#{l} " } }]\n"
   end
-
-  def valid_guess?
+  
+  def good_choice?
     @word.include? @current_choice 
   end
-  
-  def start
-    wellcome
-    attemps
-    guess
+
+  def ask
+    puts @word
+    puts "Please enter a letter:"
+    @current_choice = gets.chomp.downcase
+    if valid_input?
+      check_guess
+    else
+      puts "Please enter only a single letter"
+    end
+    print show_progress
+    ask if should_continue?
   end
 
-  def guess
-    puts "Please enter a letter:"
-    @current_choice = gets.chomp
-    if valid_guess? 
+  def check_guess
+    if good_choice?
       update_guessed_letters
+      reveal_letter
       puts "Good choice!"
       puts "You won" if win?
     else
@@ -47,12 +65,14 @@ class Hangman
       puts "Now you just have #{@available_attemps} attemps"
       puts "Game over" if game_over?
     end
-    print show_progress
-    guess if continue?
   end
 
-  def continue?
-    !game_over? && !win?
+  def valid_input?
+    @current_choice.length == 1 && LETTERS.include?(@current_choice)
+  end
+
+  def should_continue?
+    !game_over? || !win?
   end
 
   def win?
@@ -67,7 +87,7 @@ class Hangman
     @available_attemps -= 1
   end
 
-  def wellcome
+  def wellcome_info
     puts "Welcome to Hangman"
     puts "------------------"
     puts "Let's have some fun!"
@@ -75,7 +95,7 @@ class Hangman
     print show_progress
   end
 
-  def attemps
+  def attemps_info
     puts "You have #{@total_attemps} attemps to find out the right word"
     puts "Good luck!"
   end
