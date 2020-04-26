@@ -5,16 +5,19 @@ class Hangman
 
   def initialize
     @word = get_word
-    @total_attemps = @word.length
-    @available_attemps = @word.length
     @guessed_letters = []
     @word_revealed = []
+    @level = nil
   end
 
   def start
+    ask_level
+    calc_attemps
+    reveal_letter
     wellcome_info
     attemps_info
     ask
+    play_again
   end
 
   def get_word(word_length=12)
@@ -42,7 +45,6 @@ class Hangman
   end
 
   def ask
-    puts @word
     puts "Please enter a letter:"
     @current_choice = gets.chomp.downcase
     if valid_input?
@@ -72,11 +74,17 @@ class Hangman
   end
 
   def should_continue?
-    !game_over? || !win?
+    if win?
+      false
+    elsif game_over?
+      false
+    else
+      true 
+    end
   end
 
   def win?
-    @word_revealed.include?("_") == false
+    !@word_revealed.include?("_")
   end
 
   def game_over?
@@ -85,6 +93,33 @@ class Hangman
 
   def update_available_attemps
     @available_attemps -= 1
+  end
+
+  def ask_level
+    puts "Please enter your difficulty level"
+    @level = gets.chomp
+  end
+
+  def calc_attemps
+    attemps = if @level == "low" 
+      3 
+    elsif @level == "mid" 
+      0 
+    elsif @level == "high"
+      -3
+    end
+    @total_attemps = @word.length + attemps
+    @available_attemps = @word.length + attemps
+  end
+
+  def play_again
+    puts "Would you like to play again?"
+    response = gets.chomp
+    if ["yes", "y"].include? response
+      start
+    else
+      puts "Good bye!"
+    end
   end
 
   def wellcome_info
