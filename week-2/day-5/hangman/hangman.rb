@@ -102,12 +102,12 @@ class Hangman
 
   def calc_attemps
     attemps = if @level == "low" 
-      3 
-    elsif @level == "mid" 
-      0 
-    elsif @level == "high"
-      -3
-    end
+                3
+              elsif @level == "mid" 
+                0
+              elsif @level == "high"
+                -3
+              end
     @total_attemps = @word.length + attemps
     @available_attemps = @word.length + attemps
   end
