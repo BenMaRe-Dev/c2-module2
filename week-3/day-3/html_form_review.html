@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>GET & POST method</title>
+  </head>
+  <body>
+    <!-- GET Form -->
+    <p>GET method</p>
+    <form action="http://www.google.com/search" method="GET">
+      <label for="google_search">Search on Google:</label><br>
+      <input type="search" id="google_search"  name="q" value=""><br>
+      <input type="submit" value="Google search">
+    </form>
+    <br>
+    <br>
+    <!-- POST Form -->
+    <p>POST method</p>
+    <form action="https://httpbin.org/post" method="POST">
+      <label for="email">E-mail:</label><br>
+      <input type="email" id="email"  name="email" value="email"><br>
+      <label for="password">Password:</label><br>
+      <input type="password" id="password"  name="password" value="password"><br>
+      <input type="submit" value="Send">
+    </form>
+</body>
+</html>
